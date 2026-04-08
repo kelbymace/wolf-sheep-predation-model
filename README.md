@@ -4,7 +4,7 @@ This project is a Python implementation and extension of NetLogo’s classic **W
 
 The main research direction of the project is:
 
-> Can reinforcement learning produce sheep movement policies that outperform simple hand-coded heuristics such as `avoid_wolves`, especially when grass is scarce and the sheep must balance predator avoidance with foraging?
+> Can reinforcement learning produce sheep movement policies that outperform and appear more 'life-like' than simple hand-coded heuristics such as `avoid_wolves`, especially when grass is scarce and the sheep must balance predator avoidance with foraging?
 
 ---
 
@@ -38,13 +38,14 @@ wolf-sheep-predation-model/
 ├── policies/
 │   └── *.pt
 ├── notebooks/
-│   └── demo_policies.ipynb
+│   └── WSPRunner.ipynb
 ├── src/
 │   └── wolf_sheep_rl/
 │       ├── __init__.py
 │       ├── model.py
-│       ├── agents.py
-│       ├── actions.py
+│       ├── animal.py
+│       ├── sheep.py
+│       ├── wolf.py
 │       ├── observations.py
 │       ├── rewards.py
 │       ├── policy.py
@@ -176,17 +177,17 @@ policy_net, episode_lengths = train_policy_gradient(
     pretrain_epochs=15,
     pretrain_lr=1e-3,
     model_kwargs={
-        "width": 10,
-        "height": 10,
-        "initial_number_sheep": 1,
-        "initial_number_wolves": 1,
+        "width": 30,
+        "height": 30,
+        "initial_number_sheep": 25,
+        "initial_number_wolves": 15,
         "model_version": "rl-training",
         "sheep_strategy": "rl",
         "wolf_strategy": "seek_sheep",
         "enable_grass": True,
         "sheep_sight_radius": 2,
         "wolf_sight_radius": 2,
-        "grass_regrowth_time": 20,
+        "grass_regrowth_time": 30,
     }
 )
 ```
@@ -208,7 +209,7 @@ Load later with:
 from wolf_sheep_rl.policy import PolicyNetwork
 import torch
 
-policy_net = PolicyNetwork(input_dim=51, hidden_dims=(64, 32), num_actions=8)
+policy_net = PolicyNetwork(input_dim=51, hidden_dim=32, num_actions=8)
 policy_net.load_state_dict(torch.load("policies/sheep_policy.pt"))
 policy_net.eval()
 ```
@@ -267,7 +268,6 @@ Additional shaping rewards were tested, but they had limited impact in the curre
 
 Possible extensions include:
 - richer sheep observations
-- multi-sheep shared-policy RL
 - more advanced RL algorithms beyond vanilla policy gradient
 - curriculum learning across map sizes and difficulty levels
 - more formal statistical comparison of policies
@@ -283,4 +283,4 @@ This project is inspired by NetLogo’s **Wolf Sheep Predation** model by Uri Wi
 
 ## License
 
-Add your preferred license here.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
