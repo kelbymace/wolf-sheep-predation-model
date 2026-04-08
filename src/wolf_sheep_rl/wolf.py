@@ -1,5 +1,6 @@
 import random
 import math
+import numpy as np
 from .animal import Animal
 
 class Wolf(Animal):

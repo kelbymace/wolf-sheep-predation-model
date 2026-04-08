@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
-
+from .policy import PolicyNetwork
 from .model import WolfSheepModel
 
 def generate_expert_data(num_samples=5000, model_kwargs=None):
@@ -66,33 +66,6 @@ def pretrain_policy_with_expert(policy_net, num_samples=5000, batch_size=64, num
         print(f"Pretrain epoch {epoch + 1}/{num_epochs}, loss = {avg_loss:.4f}")
 
     return policy_net, losses
-
-class PolicyNetwork(nn.Module):
-    def __init__(self, input_dim=51, hidden_dim=32, num_actions=8):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(input_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, num_actions)
-        )
-
-    def forward(self, state):
-        return self.net(state)   # returns logits for 9 actions
-        
-def choose_action(policy_net, obs, greedy=False):
-
-    state = torch.as_tensor(obs, dtype=torch.float32)
-    logits = policy_net(state)
-    dist = torch.distributions.Categorical(logits=logits)
-
-    if greedy:
-        action = torch.argmax(logits)
-        log_prob = dist.log_prob(action)
-    else:
-        action = dist.sample()
-        log_prob = dist.log_prob(action)
-
-    return int(action.item()), log_prob
 
 def compute_returns(rewards, gamma=0.99):
     returns = []

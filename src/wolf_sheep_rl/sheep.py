@@ -2,7 +2,7 @@ import random
 import math
 import numpy as np
 from .animal import Animal
-from .training import choose_action
+from .policy import choose_action
 from .observations import get_sheep_observation
 
 

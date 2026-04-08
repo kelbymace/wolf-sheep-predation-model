@@ -1,9 +1,35 @@
+# Virtual environment
 .venv/
+venv/
+
+# Python cache / compiled files
 __pycache__/
-*.pyc
-.ipynb_checkpoints/
-.vscode/
-dist/
+*.py[cod]
+*$py.class
+
+# Packaging / build artifacts
 build/
+dist/
 *.egg-info/
-.env
+.eggs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE / editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary training artifacts
+checkpoints/
+tmp_models/
+*.log
