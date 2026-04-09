@@ -80,7 +80,7 @@ def compute_returns(rewards, gamma=0.99):
     return returns
 
 
-def train_policy_gradient(num_episodes=1000, gamma=0.99, learning_rate=1e-3, max_steps=200, model_kwargs=None, pretrain_with_expert=False, pretrain_samples=5000, pretrain_epochs=10, pretrain_lr=1e-3):
+def train_policy_gradient(policy_file_name="sheep_policy.pt", num_episodes=1000, gamma=0.99, learning_rate=1e-3, max_steps=200, model_kwargs=None, pretrain_with_expert=False, pretrain_samples=5000, pretrain_epochs=10, pretrain_lr=1e-3):
 
     model_kwargs = dict(model_kwargs or {})
     sight_radius = model_kwargs.get("sheep_sight_radius", 2)
@@ -150,7 +150,7 @@ def train_policy_gradient(num_episodes=1000, gamma=0.99, learning_rate=1e-3, max
 
             if avg_len > best_avg_len:
                 best_avg_len = avg_len
-                torch.save(policy_net.state_dict(), "best_sheep_policy_2.0.pt")
+                torch.save(policy_net.state_dict(), policy_file_name)
 
     return policy_net, episode_lengths
 
