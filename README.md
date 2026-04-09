@@ -267,7 +267,9 @@ Additional shaping rewards were tested, but they had limited impact in the curre
 ## Future Directions
 
 Possible extensions include:
-- richer sheep observations
+- currently, sheep get the first-move advantage at each step; change this such that sheep and wolves effectively move simultaneously
+- make wolves move faster than sheep
+- negate the sheep ability to step through an oncoming wolf as an evasive maneuver (RL policy learned to exploit this trick)
 - more advanced RL algorithms beyond vanilla policy gradient
 - curriculum learning across map sizes and difficulty levels
 - more formal statistical comparison of policies

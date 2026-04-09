@@ -121,7 +121,7 @@ class WolfSheepModel:
         for _ in range(self.initial_number_wolves):
             x = random.randrange(self.width)
             y = random.randrange(self.height)
-            if self.model_version == "sheep-wolves-grass":
+            if self.model_version in ["sheep-wolves-grass", "rl-training"]:
                 energy = random.randrange(2 * self.wolf_gain_from_food)
             self.wolves.append(Wolf(self, x, y, energy))
 
@@ -305,7 +305,7 @@ class WolfSheepModel:
             sheep_after = self.sheep[0]
             if sheep_energy_before is not None and sheep_after.energy is not None and sheep_after.energy > sheep_energy_before:
                 grass_eaten = True
-            reward = self.get_reward(sheep_after, grass_eaten=grass_eaten)
+            reward = get_reward(self, sheep_after, grass_eaten=grass_eaten)
             done = False
             return reward, done
 
