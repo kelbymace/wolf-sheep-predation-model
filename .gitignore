@@ -33,3 +33,6 @@ Thumbs.db
 checkpoints/
 tmp_models/
 *.log
+
+# HTML Animations
+html_files/
