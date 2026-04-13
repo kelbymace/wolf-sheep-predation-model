@@ -36,3 +36,6 @@ tmp_models/
 
 # HTML Animations
 html_files/
+
+# Output Data for Model Policy Analysis
+output_data/

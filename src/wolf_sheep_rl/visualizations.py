@@ -26,9 +26,7 @@ def animate_model(model, steps=200, interval=150):
 
     anim = None
 
-    def update(frame):
-        running = model.go()
-
+    def draw_current_state():
         grass_img.set_data(model.patch_array())
 
         sheep_xy = np.array([(s.x, s.y) for s in model.sheep]) if model.sheep else np.empty((0, 2))
@@ -41,10 +39,18 @@ def animate_model(model, steps=200, interval=150):
             f"Tick {model.ticks} | Sheep: {model.count_sheep()} | Wolves: {model.count_wolves()}"
         )
 
-        if not running and anim is not None:
-            anim.event_source.stop()
-
         return grass_img, sheep_scatter, wolf_scatter, title
+
+
+    def update(frame):
+        artists = draw_current_state()
+
+        if frame < steps - 1:
+            running = model.go()
+            if not running and anim is not None:
+                anim.event_source.stop()
+
+        return artists
 
     anim = FuncAnimation(
         fig,
