@@ -67,13 +67,14 @@ class Wolf(Animal):
         if sheep_here:
             prey = random.choice(sheep_here)
             prey.die()
+            self.model.wolf_attack_deaths += 1 # Track sheep cause of death for evaluation purposes
             if self.model.model_version == "sheep-wolves-grass":
                 self.energy += self.model.wolf_gain_from_food
 
     def reproduce(self):
         if random.random() * 100 < self.model.wolf_reproduce:
             self.energy /= 2
-            child = Wolf(self.model, self.x, self.y, self.energy)
+            child = Wolf(self.model, self.x, self.y, self.energy, self.animal_type)
             child.heading = self.heading + random.uniform(0, 360)
             child.move()
             self.model.new_wolves.append(child)

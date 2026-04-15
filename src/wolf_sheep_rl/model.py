@@ -73,6 +73,10 @@ class WolfSheepModel:
         self.new_wolves = []
         self.ticks = 0
 
+        # For model evaluation
+        self.starvation_deaths = 0
+        self.wolf_attack_deaths = 0
+
         if self.model_version not in ["sheep-wolves-grass", "sheep-wolves", "rl-training"]:
             raise ValueError(f"Unknown model version: {self.model_version}.\nShould be one of: 'sheep-wolves-grass', 'sheep-wolves', 'rl-training'")
 
@@ -87,6 +91,10 @@ class WolfSheepModel:
         self.new_wolves = []
         self.patches = []
         self.current_episode_log_probs = [] # record for rl training
+
+        # For model evaluation
+        self.starvation_deaths = 0
+        self.wolf_attack_deaths = 0
 
         for y in range(self.height):
             row = []
@@ -116,14 +124,14 @@ class WolfSheepModel:
             y = random.randrange(self.height)
             if self.model_version in ["sheep-wolves-grass", "rl-training"]:
                 energy = random.randrange(2 * self.sheep_gain_from_food)
-            self.sheep.append(Sheep(self, x, y, energy))
+            self.sheep.append(Sheep(self, x, y, energy, animal_type="sheep"))
 
         for _ in range(self.initial_number_wolves):
             x = random.randrange(self.width)
             y = random.randrange(self.height)
             if self.model_version in ["sheep-wolves-grass", "rl-training"]:
                 energy = random.randrange(2 * self.wolf_gain_from_food)
-            self.wolves.append(Wolf(self, x, y, energy))
+            self.wolves.append(Wolf(self, x, y, energy, animal_type="wolf"))
 
         self.display_labels()
 

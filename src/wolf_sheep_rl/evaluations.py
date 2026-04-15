@@ -4,57 +4,28 @@ import random
 from .model import WolfSheepModel
 
 def evaluate_one_episode(model, max_steps=200):
-    grass_eaten = 0
-    wolf_close_steps = 0
-    nearest_wolf_dists = []
+
+    # Shouldn't be in rl-training mode
+    if model.model_version == "rl-training":
+        raise ValueError("Policies should not be evaluated in rl-training mode")
+
+    initial_sheep = len(model.sheep)
 
     for _ in range(max_steps):
         if not model.sheep:
             break
+        model.go()
 
-        sheep = model.sheep[0] if len(model.sheep) == 1 else None
-
-        # Track local danger before step
-        if sheep is not None and model.wolves:
-            dists = [
-                model.neighbor_distance(sheep.x, sheep.y, wolf.x, wolf.y)
-                for wolf in model.wolves if wolf.alive
-            ]
-            if dists:
-                nearest = min(dists)
-                nearest_wolf_dists.append(nearest)
-                if nearest <= 1:
-                    wolf_close_steps += 1
-
-        prev_energy = sheep.energy if sheep is not None else None
-
-        result = model.go()
-
-        # In rl-training mode, go() returns (reward, done)
-        if model.model_version == "rl-training":
-            _, done = result
-            if done:
-                break
-        else:
-            if result is False:
-                break
-
-        # Approximate grass eaten via positive energy change
-        if sheep is not None and model.sheep and model.sheep[0].alive:
-            if prev_energy is not None and model.sheep[0].energy is not None:
-                if model.sheep[0].energy > prev_energy:
-                    grass_eaten += 1
-
-    sheep_alive = len(model.sheep) > 0
-    final_energy = model.sheep[0].energy if sheep_alive and model.sheep[0].energy is not None else None
+    sheep_survived = len(model.sheep)
+    percent_survived = sheep_survived / initial_sheep if initial_sheep > 0 else None
+    mean_final_energy = np.mean([s.energy for s in model.sheep]) if model.sheep else None
 
     return {
         "episode_length": model.ticks,
-        "survived_to_end": sheep_alive and model.ticks >= max_steps,
-        "final_energy": final_energy,
-        "grass_eaten_events": grass_eaten,
-        "wolf_close_steps": wolf_close_steps,
-        "avg_nearest_wolf_dist": np.mean(nearest_wolf_dists) if nearest_wolf_dists else None,
+        "percent_survived": percent_survived,
+        "starvation_deaths": model.starvation_deaths,
+        "wolf_attack_deaths": model.wolf_attack_deaths,
+        "mean_final_energy": mean_final_energy
     }
 
 def evaluate_policy(policy_name, n_episodes=100, max_steps=200, model_kwargs=None, policy_net=None, seed_base=0):
@@ -103,10 +74,9 @@ def compare_policies(policy_names, n_episodes=500, max_steps=200, model_kwargs=N
 def summarize_policy_results(df):
     summary = df.groupby("policy").agg({
         "episode_length": ["mean", "std"],
-        "survived_to_end": "mean",
-        "grass_eaten_events": "mean",
-        "wolf_close_steps": "mean",
-        "avg_nearest_wolf_dist": "mean",
-        "final_energy": "mean",
+        "percent_survived": ["mean", "std"],
+        "starvation_deaths": ["mean", "std"],
+        "wolf_attack_deaths": ["mean", "std"],
+        "mean_final_energy": ["mean", "std"]
     })
     return summary

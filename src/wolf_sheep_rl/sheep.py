@@ -161,7 +161,7 @@ class Sheep(Animal):
     def reproduce(self):
         if random.random() * 100 < self.model.sheep_reproduce:
             self.energy /= 2
-            child = Sheep(self.model, self.x, self.y, self.energy)
+            child = Sheep(self.model, self.x, self.y, self.energy, self.animal_type)
             child.heading = self.heading + random.uniform(0, 360)
             child.move()
             self.model.new_sheep.append(child)
