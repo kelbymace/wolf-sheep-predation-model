@@ -9,23 +9,34 @@ def evaluate_one_episode(model, max_steps=200):
     if model.model_version == "rl-training":
         raise ValueError("Policies should not be evaluated in rl-training mode")
 
-    initial_sheep = len(model.sheep)
+    initial_sheep = model.initial_number_sheep
+    initial_wolves = model.initial_number_wolves
 
     for _ in range(max_steps):
         if not model.sheep:
             break
         model.go()
 
-    sheep_survived = len(model.sheep)
-    percent_survived = sheep_survived / initial_sheep if initial_sheep > 0 else None
-    mean_final_energy = np.mean([s.energy for s in model.sheep]) if model.sheep else None
+    sheep_survived = len([s for s in model.sheep if s.alive])
+    wolves_survived = len([w for w in model.wolves if w.alive])
+    sheep_won = 1 if wolves_survived == 0 else 0
+    sheep_lost = 1 if sheep_survived == 0 else 0
+    sheep_population_growth = (sheep_survived - initial_sheep) / initial_sheep
+    wolf_population_growth = (wolves_survived - initial_wolves) / initial_wolves
 
     return {
         "episode_length": model.ticks,
-        "percent_survived": percent_survived,
+        "sheep_won": sheep_won,
+        "sheep_lost": sheep_lost,
+        "sheep_survived": sheep_survived,
+        "wolves_survived": wolves_survived,
+        "sheep_population_growth": sheep_population_growth,
+        "wolf_population_growth": wolf_population_growth,
         "starvation_deaths": model.starvation_deaths,
         "wolf_attack_deaths": model.wolf_attack_deaths,
-        "mean_final_energy": mean_final_energy
+        "percent_starvation_deaths": model.starvation_deaths / (model.starvation_deaths + model.wolf_attack_deaths),
+        "percent_wolf_attack_deaths": model.wolf_attack_deaths / (model.starvation_deaths + model.wolf_attack_deaths),
+        "sheep_births": model.sheep_births
     }
 
 def evaluate_policy(policy_name, n_episodes=100, max_steps=200, model_kwargs=None, policy_net=None, seed_base=0):
@@ -74,9 +85,16 @@ def compare_policies(policy_names, n_episodes=500, max_steps=200, model_kwargs=N
 def summarize_policy_results(df):
     summary = df.groupby("policy").agg({
         "episode_length": ["mean", "std"],
-        "percent_survived": ["mean", "std"],
+        "sheep_won": ["mean"],
+        "sheep_lost": ["mean"],
+        "sheep_survived": ["mean", "std"],
+        "wolves_survived": ["mean", "std"],
+        "sheep_population_growth": ["mean", "std"],
+        "wolf_population_growth": ["mean", "std"],
         "starvation_deaths": ["mean", "std"],
         "wolf_attack_deaths": ["mean", "std"],
-        "mean_final_energy": ["mean", "std"]
+        "percent_starvation_deaths": ["mean", "std"],
+        "percent_wolf_attack_deaths": ["mean", "std"],
+        "sheep_births": ["mean", "std"]
     })
     return summary

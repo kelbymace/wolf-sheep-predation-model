@@ -165,6 +165,7 @@ class Sheep(Animal):
             child.heading = self.heading + random.uniform(0, 360)
             child.move()
             self.model.new_sheep.append(child)
+            self.model.sheep_births += 1
 
     def step(self):
         self.move()

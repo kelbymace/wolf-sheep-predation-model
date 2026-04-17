@@ -76,6 +76,7 @@ class WolfSheepModel:
         # For model evaluation
         self.starvation_deaths = 0
         self.wolf_attack_deaths = 0
+        self.sheep_births = 0
 
         if self.model_version not in ["sheep-wolves-grass", "sheep-wolves", "rl-training"]:
             raise ValueError(f"Unknown model version: {self.model_version}.\nShould be one of: 'sheep-wolves-grass', 'sheep-wolves', 'rl-training'")
@@ -95,6 +96,7 @@ class WolfSheepModel:
         # For model evaluation
         self.starvation_deaths = 0
         self.wolf_attack_deaths = 0
+        self.sheep_births = 0
 
         for y in range(self.height):
             row = []
