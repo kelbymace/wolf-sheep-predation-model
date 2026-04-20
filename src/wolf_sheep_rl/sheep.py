@@ -76,7 +76,11 @@ class Sheep(Animal):
     
     def move_rl(self):
         obs = get_sheep_observation(self)
-        action, log_prob = choose_action(self.model.policy_net, obs)
+        if self.model.model_version != "rl-training":
+            greedy = True
+        else:
+            greedy = False
+        action, log_prob = choose_action(self.model.policy_net, obs, greedy=greedy)
         self.apply_action(action)
 
         if self.model.collect_log_probs:
